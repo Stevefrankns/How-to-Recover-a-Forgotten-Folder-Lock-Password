@@ -1,0 +1,1641 @@
+<!-- Replace YOUR-DOMAIN.com before launch -->
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How to Recover a Forgotten Folder Lock Password</title>
+<meta content="A complete technical guide on how to recover a forgotten Folder Lock master password, understand AES-256 encryption limits, and safeguard your documents." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&amp;family=Noto+Serif+JP:wght@700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+:root {
+    --bg: #FEFEFE;
+    --ink: #1A1A1A;
+    --body: #2C2C2C;
+    --red: #C0392B;
+    --red-dark: #8F1F17;
+    --gold: #B8960C;
+    --washi: #F7F4EF;
+    --ash: #E7E1D7;
+    --ash-dark: #CFC5B6;
+    --muted: #726B63;
+    --font-heading: 'Noto Serif JP', serif;
+    --font-body: 'Noto Sans', sans-serif;
+    --max-reading-width: 620px;
+    --max-wide-width: 1040px;
+    --section-padding-v: 120px;
+    --transition-speed: .28s;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--body);
+    line-height: 2;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(192,57,43,.025) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(26,26,26,.018) 1px, transparent 1px);
+    background-size: 72px 72px;
+    opacity: .6;
+    z-index: -1;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--ink);
+    line-height: 1.24;
+    letter-spacing: .02em;
+    font-weight: 700;
+    text-transform: none;
+    margin-bottom: 1.2rem;
+}
+h1 { font-size: 54px; max-width: 880px; }
+h2 { font-size: 34px; margin-top: 0; position: relative; display: inline; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+h3 { font-size: 23px; margin-top: 2.4rem; }
+h4 { font-size: 18px; margin-top: 0; }
+p { margin-bottom: 1.65rem; max-width: var(--max-reading-width); }
+a { color: var(--red); text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color var(--transition-speed), background-size var(--transition-speed); }
+a:hover { color: var(--red-dark); }
+img { max-width: 100%; height: auto; display: block; }
+ul, ol { margin: 0 0 1.7rem 0; padding-left: 0; max-width: var(--max-reading-width); }
+li { margin-bottom: .7rem; }
+ul li { list-style: none; position: relative; padding-left: 1.4rem; }
+ul li::before { content: "—"; color: var(--red); position: absolute; left: 0; top: 0; }
+ol { counter-reset: item; list-style: none; }
+ol li { counter-increment: item; position: relative; padding-left: 2.2rem; border-bottom: 1px solid var(--ash); padding-bottom: .7rem; }
+ol li::before {
+    content: counter(item, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: .72rem;
+    color: var(--red);
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: calc(var(--max-reading-width) + 40px);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.container-wide {
+    width: 100%;
+    max-width: var(--max-wide-width);
+}
+.section { padding: var(--section-padding-v) 0; }
+.section-alt {
+    background:
+        radial-gradient(circle at 12% 0%, rgba(184,150,12,.07), transparent 30%),
+        var(--washi);
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+}
+.text-center { text-align: center; }
+.text-center p { margin-left: auto; margin-right: auto; }
+.label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    color: var(--red);
+    display: block;
+    margin-bottom: 1.15rem;
+}
+
+/* Header */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(254,254,254,.95);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(26,26,26,.08);
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+}
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 34px;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 22px 48px;
+}
+.site-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: .03em;
+    text-decoration: none;
+    white-space: nowrap;
+    line-height: 1.2;
+    margin-right: 12px;
+}
+.site-mark:hover { color: var(--ink); text-decoration: none; }
+.brand-graphic {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(192,57,43,.12) 0 38%, transparent 39%),
+        var(--bg);
+}
+.brand-graphic::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 12px;
+    border: 2px solid var(--red);
+    border-top: none;
+    border-radius: 2px;
+    left: 9px;
+    top: 16px;
+}
+.brand-graphic::after {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 10px;
+    border: 2px solid var(--red);
+    border-bottom: 0;
+    border-radius: 9px 9px 0 0;
+    left: 11px;
+    top: 8px;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex: 1 1 auto;
+    padding: 0 18px;
+}
+.nav-links a {
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    position: relative;
+}
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 1px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .28s ease;
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+.header-cta {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--red);
+    padding: 12px 22px;
+    border: 1px solid var(--red);
+    border-radius: 0;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-left: 12px;
+}
+.header-cta:hover { background: var(--red-dark); color: #fff; text-decoration: none; }
+.menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--ash);
+    color: var(--ink);
+    padding: 6px 10px;
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 0;
+    font-family: var(--font-body);
+    font-size: .92rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    border: 1px solid var(--red);
+    text-decoration: none;
+}
+.btn-primary { background: var(--red); color: #fff; }
+.btn-primary:hover { background: var(--red-dark); color: #fff; text-decoration: none; }
+.btn-outline {
+    background: transparent;
+    color: var(--red);
+    border-color: transparent;
+    border-bottom-color: var(--red);
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn-outline:hover { color: var(--red-dark); border-bottom-color: var(--red-dark); text-decoration: none; }
+
+/* Hero */
+.hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+    padding: 120px 0 86px;
+    border-bottom: 1px solid var(--ash);
+}
+.hero .container { position: relative; z-index: 2; }
+.hero-circle {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: var(--red);
+    top: -145px;
+    right: -90px;
+    opacity: .94;
+    will-change: transform;
+    z-index: 1;
+}
+.breadcrumb {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 1.8rem;
+    display: block;
+    letter-spacing: .04em;
+}
+.hero h1 { margin-bottom: 1.1rem; }
+.ink-rule {
+    width: 100%;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: inkDraw .8s ease-out .18s forwards;
+    margin: 0 0 2rem;
+}
+@keyframes inkDraw { to { transform: scaleX(1); } }
+.meta-bar {
+    font-size: .82rem;
+    color: var(--muted);
+    border-top: 1px solid var(--ash);
+    padding-top: 1rem;
+    margin-top: 2rem;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.quick-answer {
+    background: transparent;
+    border-left: 3px solid var(--red);
+    padding: 2px 0 2px 22px;
+    margin: 2rem 0;
+}
+
+/* Images */
+.content-image,
+.hero-image,
+.recommendation-media,
+.pricing-image {
+    margin: 38px 0;
+    border: 1px solid var(--ash);
+    background: #fff;
+    padding: 14px;
+    position: relative;
+}
+.content-image::before,
+.hero-image::before,
+.recommendation-media::before,
+.pricing-image::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    pointer-events: none;
+    border: 1px solid rgba(192,57,43,.10);
+}
+.content-image img,
+.hero-image img,
+.recommendation-media img,
+.pricing-image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+}
+.logo-strip {
+    max-width: 360px;
+    margin: 0 0 34px;
+    padding: 10px 0;
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+}
+.logo-strip img {
+    max-height: 56px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* TOC */
+.toc-card {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 0;
+    margin: 0;
+    box-shadow: none;
+}
+.toc-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+.toc-card li {
+    border-top: 1px solid var(--ash);
+    margin: 0;
+    padding: 14px 0 14px 18px;
+}
+.toc-card li:first-child { border-top: 0; }
+.toc-card a {
+    font-family: var(--font-body);
+    font-size: .95rem;
+    color: var(--ink);
+    text-decoration: none;
+}
+.toc-card a:hover { color: var(--red); }
+
+/* Manifesto */
+.manifesto {
+    text-align: center;
+    padding: 100px 20px;
+    background: var(--ink);
+    color: #fff;
+    margin-bottom: 0;
+}
+.manifesto h2 {
+    color: #fff;
+    font-size: 40px;
+    margin: 0 auto;
+    max-width: 880px;
+    line-height: 1.45;
+}
+
+/* Heading highlight removed: keep headings clean without red background sweep */
+.section h2,
+.saas-band h2,
+.manifesto h2 {
+    background-image: none;
+    background-size: auto;
+    background-position: initial;
+    transition: none;
+}
+.section h2.revealed,
+.saas-band h2.revealed,
+.manifesto h2.revealed {
+    background-size: auto;
+}
+
+/* Premium Recommendation */
+.saas-band {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+    color: #fff;
+    padding: 120px 0;
+}
+.saas-band h2,
+.saas-band h3,
+.saas-band .label { color: #fff; }
+.saas-band p { color: rgba(255,255,255,.78); }
+.recommendation-circle {
+    position: absolute;
+    width: 310px;
+    height: 310px;
+    border-radius: 50%;
+    right: 8%;
+    top: 92px;
+    background: var(--red);
+    opacity: .26;
+    animation: breathingCircle 4s ease-in-out infinite;
+}
+@keyframes breathingCircle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+.hanko-seal {
+    position: absolute;
+    right: 12%;
+    bottom: 70px;
+    width: 132px;
+    height: 132px;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity .55s ease, transform .55s cubic-bezier(.2,1.38,.4,1);
+}
+.hanko-seal.visible {
+    opacity: .94;
+    transform: scale(1);
+}
+.feature-chips {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 26px 0;
+    max-width: 700px;
+}
+.chip {
+    color: #fff;
+    border-left: 2px solid var(--red);
+    padding: 5px 0 5px 14px;
+    font-size: .88rem;
+    background: transparent;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .55s ease, transform .55s ease;
+}
+.chip.visible { opacity: 1; transform: translateY(0); }
+.saas-mockup {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 0;
+    padding: 24px;
+    box-shadow: none;
+    margin-top: 34px;
+    max-width: 620px;
+}
+.saas-mockup code {
+    color: rgba(255,255,255,.88);
+    white-space: normal;
+    font-family: var(--font-body);
+    line-height: 2;
+}
+.saas-actions {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 34px;
+}
+.btn-white {
+    background: #fff;
+    color: var(--ink);
+    border-color: #fff;
+}
+.btn-white:hover { background: var(--washi); color: var(--ink); text-decoration: none; }
+
+/* Timelines and lists */
+.timeline {
+    position: relative;
+    margin: 40px 0 0;
+    padding-left: 0;
+    border-left: 0;
+}
+.timeline-item {
+    position: relative;
+    margin: 0;
+    padding: 34px 0 34px 28px;
+    border-top: 1px solid var(--ash-dark);
+}
+.timeline-item:last-child { border-bottom: 1px solid var(--ash-dark); }
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 45px;
+    width: 12px;
+    height: 2px;
+    background: var(--red);
+    border: 0;
+    border-radius: 0;
+}
+.timeline-item h4 { font-size: 22px; margin-bottom: .8rem; }
+
+/* Comparison Table */
+.comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: .92rem;
+    border: 1px solid var(--ink);
+}
+.comp-table th,
+.comp-table td {
+    padding: 18px 16px;
+    border: 1px solid var(--ash-dark);
+    text-align: left;
+    vertical-align: top;
+}
+.comp-table th {
+    background: var(--red);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+.comp-table tr:nth-child(even) { background: rgba(247,244,239,.55); }
+.comp-table .verdict {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+}
+.comp-table .verdict td { border-color: var(--ink); }
+
+/* Accordion */
+.accordion-item {
+    border-bottom: 1px solid var(--ash-dark);
+    margin-bottom: 0;
+}
+.accordion-item:first-of-type { border-top: 1px solid var(--ash-dark); }
+.accordion-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 22px 0;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+}
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .32s ease;
+}
+.accordion-content-inner {
+    padding-bottom: 24px;
+    color: var(--body);
+    font-size: .95rem;
+}
+.accordion-btn.active::after { content: '−'; color: var(--red); }
+.accordion-btn::after { content: '+'; color: var(--red); font-size: 1.55rem; line-height: 1; }
+
+/* Flowchart */
+.flowchart {
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-left: 3px solid var(--red);
+    border-radius: 0;
+    padding: 34px;
+    margin: 2rem 0;
+}
+.flow-step { display: none; text-align: left; }
+.flow-step.active { display: block; animation: fadeIn .3s ease; }
+.flow-question {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 22px;
+    line-height: 1.45;
+}
+.flow-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.flow-result {
+    padding: 24px;
+    background: var(--washi);
+    border-left: 3px solid var(--red);
+    text-align: left;
+    display: none;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Free vs Paid Toggle */
+.toggle-container {
+    margin: 2rem 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+}
+.toggle-switch {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--ash-dark);
+}
+.toggle-btn {
+    padding: 14px 26px;
+    font-family: var(--font-body);
+    font-size: .9rem;
+    cursor: pointer;
+    border: 0;
+    border-right: 1px solid var(--ash-dark);
+    background: transparent;
+    color: var(--ink);
+    font-weight: 700;
+}
+.toggle-btn.active { background: var(--red); color: #fff; }
+.toggle-btn:first-child,
+.toggle-btn:last-child { border-radius: 0; }
+.plan-view { display: none; padding: 0 0 20px; }
+.plan-view.active { display: block; animation: fadeIn .3s ease; }
+
+/* Pricing */
+.radial-pricing {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) 2fr;
+    gap: 34px;
+    align-items: start;
+    margin: 3rem 0;
+}
+.radial-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+}
+.radial-tab {
+    text-align: left;
+    padding: 18px 0;
+    border: 0;
+    border-bottom: 1px solid var(--ash-dark);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.radial-tab.active { color: var(--red); }
+.radial-content {
+    background: transparent;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 28px 0;
+    border-radius: 0;
+    display: none;
+}
+.radial-content.active { display: block; }
+.price-tag {
+    font-family: var(--font-heading);
+    font-size: 38px;
+    color: var(--red);
+    margin: 16px 0;
+}
+
+/* Warning Box */
+.warning-box {
+    background: transparent;
+    border-left: 3px solid var(--red);
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+    padding: 20px 0 20px 24px;
+    margin: 2rem 0;
+    font-size: .92rem;
+}
+.warning-box strong { color: var(--red); }
+
+/* Footer */
+footer {
+    background: var(--ink);
+    color: rgba(255,255,255,.72);
+    padding: 96px 28px 82px;
+    font-size: .85rem;
+    text-align: center;
+}
+footer .container {
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+footer .site-mark {
+    color: #fff;
+    justify-content: center;
+    gap: 18px;
+    margin: 0 0 28px 0;
+}
+footer .brand-graphic {
+    background: transparent;
+    border-color: rgba(255,255,255,.86);
+}
+footer .brand-graphic::before,
+footer .brand-graphic::after { border-color: rgba(255,255,255,.86); }
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px 34px;
+    margin: 0 0 34px;
+    padding: 24px 0;
+    flex-wrap: wrap;
+    width: 100%;
+    border-top: 1px solid rgba(255,255,255,.14);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+}
+.footer-links a { color: #fff; padding: 6px 2px; }
+footer p {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 12px;
+    line-height: 1.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    :root { --section-padding-v: 84px; }
+    body { font-size: 15px; }
+    h1 { font-size: 34px; }
+    h2 { font-size: 27px; }
+    header { min-height: 78px; }
+    .header-inner { padding: 16px 22px; flex-wrap: wrap; gap: 16px; }
+    .site-mark { gap: 12px; margin-right: 0; font-size: 1.02rem; }
+    .brand-graphic { width: 34px; height: 34px; flex-basis: 34px; }
+    .brand-graphic::before { left: 7px; top: 15px; }
+    .brand-graphic::after { left: 9px; top: 7px; }
+    .nav-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 22px 0 8px;
+        gap: 16px;
+        border-top: 1px solid var(--ash);
+    }
+    .nav-links a { padding: 4px 0; }
+    .nav-links.active { display: flex; }
+    .menu-toggle { display: block; margin-left: auto; }
+    .header-cta { display: none; }
+    .hero { padding: 88px 0 64px; }
+    .hero-circle {
+        width: 200px;
+        height: 200px;
+        top: -92px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .manifesto { padding: 74px 20px; }
+    .manifesto h2 { font-size: 27px; }
+    .flowchart { padding: 24px 18px; }
+    .saas-actions { flex-direction: column; align-items: flex-start; }
+    .radial-pricing { grid-template-columns: 1fr; }
+    .recommendation-circle { width: 210px; height: 210px; right: -64px; top: 80px; }
+    .hanko-seal { width: 104px; height: 104px; right: 20px; bottom: 40px; }
+    .content-image, .hero-image, .recommendation-media, .pricing-image { margin: 28px 0; padding: 10px; }
+    .meta-bar { gap: 10px; }
+}
+
+
+
+/* Final navbar + footer spacing correction */
+header {
+    min-height: 104px;
+    padding: 0;
+}
+.header-inner {
+    max-width: 1280px;
+    padding: 26px 64px;
+    gap: 44px;
+}
+.site-mark {
+    gap: 22px;
+    font-size: 1.22rem;
+    letter-spacing: .04em;
+    margin-right: 24px;
+    min-width: max-content;
+}
+.site-mark .brand-text {
+    display: inline-block;
+    word-spacing: .16em;
+    line-height: 1.25;
+}
+.nav-links {
+    gap: 38px;
+    padding: 0 28px;
+    margin: 0 18px;
+}
+.nav-links a {
+    padding: 8px 0;
+    white-space: nowrap;
+}
+.header-cta {
+    margin-left: 24px;
+    padding: 13px 24px;
+}
+footer {
+    padding: 112px 32px 96px;
+}
+footer .container {
+    gap: 0;
+}
+footer .site-mark {
+    gap: 22px;
+    margin-bottom: 38px;
+    font-size: 1.25rem;
+}
+.footer-links {
+    gap: 24px 44px;
+    margin: 0 0 42px;
+    padding: 30px 0;
+}
+.footer-links a {
+    padding: 8px 4px;
+    line-height: 1.6;
+}
+footer p + p {
+    margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+    .header-inner {
+        padding: 22px 28px;
+        gap: 22px;
+    }
+    .site-mark {
+        gap: 16px;
+        margin-right: 0;
+        font-size: 1.06rem;
+    }
+    .nav-links {
+        margin: 0;
+        padding: 20px 0 10px;
+        gap: 18px;
+    }
+    footer {
+        padding: 84px 24px 72px;
+    }
+    footer .site-mark {
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+    .footer-links {
+        gap: 18px 28px;
+        padding: 24px 0;
+        margin-bottom: 34px;
+    }
+}
+
+@media (max-width: 520px) {
+    header {
+        min-height: 86px;
+    }
+    .header-inner {
+        padding: 18px 20px;
+    }
+    .site-mark {
+        font-size: .98rem;
+        gap: 13px;
+        max-width: calc(100% - 58px);
+    }
+    .site-mark .brand-text {
+        white-space: normal;
+    }
+    footer .site-mark {
+        flex-direction: column;
+        gap: 14px;
+        text-align: center;
+    }
+    .footer-links {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+</style>
+</head>
+<body>
+<header>
+<div class="header-inner">
+<a class="site-mark" href="/"><span aria-hidden="true" class="brand-graphic"></span><span class="brand-text">Folder Lock Recovery</span></a>
+<button aria-label="Toggle navigation" class="menu-toggle">☰</button>
+<nav class="nav-links">
+<a href="#overview">Overview</a>
+<a href="#methods">Recovery Methods</a>
+<a href="#troubleshooting">Troubleshooting</a>
+<a href="#architecture">Architecture</a>
+<a href="#faq">FAQ</a>
+</nav>
+<a class="header-cta" href="#recommendation">See Our Top Pick →</a>
+</div>
+</header>
+<main>
+<!-- S1: HERO -->
+<section class="hero"><div aria-hidden="true" class="hero-circle"></div>
+<div class="container">
+<span class="breadcrumb">Home / Security Guides / Document &amp; Folder Protection</span><figure class="logo-strip"><img alt="NewSoftwares security apps horizontal logo" loading="lazy" src="https://i.ibb.co/Gfz7pY0Y/newsoftwares-security-apps-horizontal-logo.png"/></figure>
+<h1>How to Recover a Forgotten Folder Lock Password</h1><div aria-hidden="true" class="ink-rule"></div>
+<p>Locked out of your secure files? Understand your options for resetting a Folder Lock master password, why brute-forcing fails against AES-256, and official steps to regain access to your protected documents.</p>
+<div class="quick-answer">
+<span class="label">Quick Answer</span>
+<p>If you have forgotten your Folder Lock master password, your primary recovery path depends on your software version. For legacy editions, the <strong>Master Key</strong> feature allows a reset via your original serial number. For modern versions (Folder Lock 10), account access can be recovered via email OTP, but localized encrypted vaults without cloud backups remain permanently sealed by AES-256. <a href="#methods">Read the full official recovery steps below.</a></p>
+</div><figure class="hero-image"><img alt="Folder Lock 10 security feature banner showing encrypted file protection across devices" loading="lazy" src="https://i.ibb.co/39b4VD9H/folder-lock-10-feature-banner.png"/></figure>
+<div class="meta-bar">
+<span>By the Editorial Security Team</span>
+<span>Updated: May 2026</span>
+<span>12 min read</span>
+</div>
+</div>
+</section>
+<!-- SEED A: CENTERED MANIFESTO (S2a) -->
+<section class="manifesto">
+<div class="container">
+<h2>True encryption has no backdoors. If it did, your files wouldn't be secure in the first place.</h2>
+</div>
+</section>
+<!-- S2: TABLE OF CONTENTS -->
+<section class="section section-alt">
+<div class="container">
+<div class="toc-card">
+<span class="label">Table of Contents</span>
+<ul>
+<li><a href="#overview">1. What Happens When You Forget the Password?</a></li>
+<li><a href="#methods">2. Official Recovery Methods</a></li>
+<li><a href="#troubleshooting">3. Interactive Troubleshooting Flowchart</a></li>
+<li><a href="#architecture">4. Master Password Architecture Explained</a></li>
+<li><a href="#recommendation">5. Securing Files Moving Forward</a></li>
+<li><a href="#document-passwords">6. Document Passwords (Word/PDF)</a></li>
+<li><a href="#faq">7. Frequently Asked Questions</a></li>
+</ul>
+</div>
+</div>
+</section>
+<!-- S3: OVERVIEW & LEGAL -->
+<section class="section" id="overview">
+<div class="container">
+<span class="label">The Reality of File Locking</span>
+<h2>What Happens If You Forget Folder Lock Password?</h2>
+<p>Folder Lock uses on-the-fly <a href="https://psbios.com/file-encryption-explained/" rel="noopener noreferrer" target="_blank">AES-256 encryption</a>. This military-grade standard ensures that without the correct cryptographic key (your password), the scrambled data cannot be reconstituted into readable files.</p>
+<p>Many users search for "how to unlock folder lock without password" or "folder lock 7 forgot password bypass." The technical reality is that <strong>there is no secret developer backdoor</strong>. If software could be easily bypassed via a command prompt trick or a third-party uninstaller, malware could use the exact same tricks to steal your data.</p>
+<div class="warning-box">
+<strong>Ownership &amp; Legality Note:</strong>
+<p>This guide provides official, owner-safe recovery methods. We do not provide software cracking tools, credential dumping techniques, or bypass scripts. Unauthorized access to protected digital documents violates local and international cyber laws.</p>
+</div><figure class="content-image"><img alt="Password lock illustration showing secure access control for protected folders" loading="lazy" src="https://i.ibb.co/LzzGGSL3/Password-Lock.jpg"/></figure>
+</div>
+</section>
+<!-- S4: METHODS GUIDE -->
+<section class="section section-alt" id="methods">
+<div class="container">
+<span class="label">Step-By-Step</span>
+<h2>Official Methods to Recover Folder Lock Password</h2>
+<div class="timeline">
+<div class="timeline-item">
+<h4>Method 1: Account Email Verification (Folder Lock 10+)</h4>
+<p>Modern iterations of the software utilize a centralized account system tied to your email address. If you are locked out of the main application interface, you can initiate a secure reset process.</p>
+<ol>
+<li>Launch the application and navigate to the Account Settings or sign-in screen.</li>
+<li>Trigger the password change or recovery protocol.</li>
+<li>The system will dispatch a One-Time Password (OTP) to your registered email address.</li>
+<li>Input this time-sensitive PIN into the application to authenticate your identity and establish new login credentials.</li>
+</ol><figure class="content-image"><img alt="Folder Lock 10 account settings screen for email verification and password recovery" loading="lazy" src="https://i.ibb.co/9mDZmBwW/folder-lock-10-screenshot-settings-account.png"/></figure>
+<p><em>Note: This restores application access, but standalone encrypted vaults (<a href="https://fileinfo.com/extension/flka" rel="noopener noreferrer" target="_blank">.flk/.flka files</a>) with unique passwords may still remain inaccessible if that specific key is lost.</em></p>
+</div>
+<div class="timeline-item">
+<h4>Method 2: The Serial Number Reset (Legacy Versions / FL7)</h4>
+<p>Older editions of the software relied on a localized safety net. If you proactively linked your security credentials to your purchase license during initial setup, this serves as your bypass mechanism.</p>
+<ol>
+<li>Open the desktop application and trigger the password prompt.</li>
+<li>Click the <strong>Master Key</strong> or <strong>Forgot Password</strong> hyperlink.</li>
+<li>Type in your exact software registration serial number.</li>
+<li>Upon validation, the system will prompt you to designate a fresh master password.</li>
+</ol><figure class="content-image"><img alt="Folder Lock 10 security and privacy settings screen for master password options" loading="lazy" src="https://i.ibb.co/QjzK8dZg/folder-lock-10-screenshot-settings-security-privacy.png"/></figure>
+</div>
+<div class="timeline-item">
+<h4>Method 3: Contacting Vendor Support</h4>
+<p>If automated methods fail, official support channels can assist in retrieving lost purchase records or serial numbers by cross-referencing your payment email. However, strictly adhering to zero-knowledge privacy standards, <strong>support technicians have absolutely no capability to remotely decrypt your files or extract your passwords.</strong></p>
+</div>
+</div>
+</div>
+</section>
+<!-- S16: INTERACTIVE TROUBLESHOOTING FLOWCHART -->
+<section class="section" id="troubleshooting">
+<div class="container">
+<span class="label">Interactive Tool</span>
+<h2>Password Recovery Flowchart</h2>
+<p>Select your exact situation below to see your available recovery options.</p><figure class="content-image"><img alt="Folder Lock login screen prompting for the master password before recovery steps" loading="lazy" src="https://i.ibb.co/qLdJBbwS/folder-lock-login-screen.png"/></figure>
+<div class="flowchart" id="recovery-flowchart">
+<!-- Step 1 -->
+<div class="flow-step active" id="step-1">
+<div class="flow-question">Do you have the original Serial Number / License Key you used to purchase Folder Lock?</div>
+<div class="flow-actions">
+<button class="btn btn-primary" onclick="flowNext('step-2-yes')">Yes, I have it</button>
+<button class="btn btn-outline" onclick="flowNext('step-2-no')">No, I lost it / Using Trial</button>
+</div>
+</div>
+<!-- Step 2 (Yes Key) -->
+<div class="flow-step" id="step-2-yes">
+<div class="flow-question">Did you enable the 'Master Key' feature in Security Settings prior to losing the password?</div>
+<div class="flow-actions">
+<button class="btn btn-primary" onclick="flowShowResult('result-success')">Yes</button>
+<button class="btn btn-outline" onclick="flowShowResult('result-fail-settings')">No / I'm not sure</button>
+</div>
+</div>
+<!-- Step 2 (No Key) -->
+<div class="flow-step" id="step-2-no">
+<div class="flow-question">Do you have access to the email address used to purchase the software?</div>
+<div class="flow-actions">
+<button class="btn btn-primary" onclick="flowShowResult('result-recover-key')">Yes</button>
+<button class="btn btn-outline" onclick="flowShowResult('result-total-loss')">No</button>
+</div>
+</div>
+<!-- Results -->
+<div class="flow-result" id="result-success">
+<h4>Recovery Possible</h4>
+<p>Open Folder Lock, click on the password field, and look for the 'Master Key' option. Enter your Serial Number to reset your Master Password. You will regain access to all encrypted lockers.</p>
+<button class="btn btn-outline" onclick="flowReset()" style="margin-top:15px">Start Over</button>
+</div>
+<div class="flow-result" id="result-fail-settings">
+<h4>Recovery Highly Unlikely</h4>
+<p>Even with the Serial Number, if the Master Key setting was turned off to maximize security, the software will not accept the Serial Number as a reset token. The encrypted lockers remain sealed by AES-256.</p>
+<button class="btn btn-outline" onclick="flowReset()" style="margin-top:15px">Start Over</button>
+</div>
+<div class="flow-result" id="result-recover-key">
+<h4>Step 1: Recover Your Key</h4>
+<p>Contact <a href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">NewSoftwares.net support</a> with your purchase email address. They can reissue your Serial Number. Once you have it, you can attempt the Master Key reset method.</p>
+<button class="btn btn-outline" onclick="flowReset()" style="margin-top:15px">Start Over</button>
+</div>
+<div class="flow-result" id="result-total-loss">
+<h4>Data Recovery Impossible</h4>
+<p>Without the password, without the serial number, and without the purchase email, AES-256 encryption cannot be broken. Your files are securely locked and permanently inaccessible.</p>
+<button class="btn btn-outline" onclick="flowReset()" style="margin-top:15px">Start Over</button>
+</div>
+</div>
+</div>
+</section>
+<!-- S10: DEEP DIVE ACCORDION (ARCHITECTURE) -->
+<section class="section section-alt" id="architecture">
+<div class="container">
+<span class="label">Under The Hood</span>
+<h2>Folder Lock Master Password Architecture Explained</h2>
+<p>Why is "how to recover forgot folder lock password" such a difficult problem to solve? It comes down to military-grade cryptographic standards designed specifically to keep intruders out.</p><figure class="content-image"><img alt="Secure virtual drive illustration representing encrypted Folder Lock vault architecture" loading="lazy" src="https://i.ibb.co/q3LHT6Kb/Secure-Virtual-Drive.jpg"/></figure>
+<div class="accordion-item">
+<button class="accordion-btn active" onclick="toggleAccordion(this)">AES-256 &amp; RSA Dual Encryption</button>
+<div class="accordion-content" style="max-height: 500px;">
+<div class="accordion-content-inner">
+                        The software deploys a dual-layered security framework. It utilizes 256-bit Advanced Encryption Standard (AES) to scramble your actual files and folders on-the-fly. Simultaneously, it leverages robust RSA encryption for user profile authentication and <a href="https://websitesecuritystore.com/blog/how-to-secure-an-email-easy-tips-implement/" rel="noopener noreferrer" target="_blank">secure file sharing</a>. Without the exact alphanumeric string to recreate the decryption key, accessing the data is mathematically unfeasible.
+                    </div>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-btn" onclick="toggleAccordion(this)">The Zero-Knowledge Principle</button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+                        A true security application operates on a zero-knowledge basis, meaning the developers never store your master password on their servers. There are no hidden developer backdoors. If such a vulnerability existed to help forgetful users, it would inevitably be exploited by malicious actors, rendering the entire software useless.
+                    </div>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-btn" onclick="toggleAccordion(this)">Standalone Portable Lockers (.flka)</button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+                        When you create secure vaults for USB drives or email attachments, the software generates standalone executable containers. These isolated vaults carry their own localized encryption. Uninstalling the main software from your PC has absolutely no effect on these portable containers—they remain permanently locked until the precise credential is provided.
+                    <figure class="content-image"><img alt="Folder Lock 10 portable lockers screen for password-protected USB and email containers" loading="lazy" src="https://i.ibb.co/wNkcx3WC/folder-lock-10-screenshot-safeguard-portable-lockers.png"/></figure></div>
+</div>
+</div>
+</div>
+</section>
+<!-- S14: DOCUMENT PASSWORDS (Addressing the GSC Queries) -->
+<section class="section" id="document-passwords">
+<div class="container">
+<span class="label">Contextual Comparison</span>
+<h2>Folder Lock vs Document Password Protection (Word/PDF)</h2>
+<p>Many users confuse full folder encryption with basic document <a href="https://www.avast.com/c-password-protect-file-folder-windows" rel="noopener noreferrer" target="_blank">password protection</a> (like in Microsoft Word, Excel, or PDF files). If you are looking to recover a forgotten password of a PDF file or Word document, the rules are different.</p>
+<h3>Open Password vs Permissions Password — Explained</h3>
+<ul>
+<li><strong>Permissions Password (Edit Lock):</strong> This locks a document from editing or restricts document access (preventing copying/printing). These are often weak and can sometimes be bypassed by saving the document to a different format (like uploading a Word doc to Google Docs) or using basic recovery utilities.</li>
+<li><strong>Open Password (Read Lock):</strong> This encrypts the document. Like Folder Lock, modern Office files (Office 2013+) and modern PDFs use AES encryption. If you forget an Open Password, the file cannot be opened without brute-force recovery software (which can take years if the password is long).</li>
+</ul><figure class="content-image"><img alt="Encrypted folders interface illustration comparing folder encryption with document passwords" loading="lazy" src="https://i.ibb.co/T9K6tn6/encrypt-folders.png"/></figure>
+<p><strong>Note on Google Sheets/Docs:</strong> If you see an error like <em>"couldn't be opened for import. if the file is password protected, try removing the password google sheets,"</em> this means Google Drive cannot decrypt Office files. You must open the file locally in Microsoft Office, enter the password, remove the password, and re-upload it.</p>
+</div>
+</section>
+<!-- S8: METHODS COMPARISON TABLE (V1) -->
+<section class="section section-alt">
+<div class="container">
+<span class="label">At a Glance</span>
+<h2>Password Recovery Methods Comparison</h2>
+<table class="comp-table">
+<thead>
+<tr>
+<th>Recovery Target</th>
+<th>Built-in Mechanism</th>
+<th>Bypass Difficulty</th>
+<th>Support Intervention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Folder Lock (Master Key Enabled)</strong></td>
+<td>Serial Number Reset</td>
+<td>Impossible without key</td>
+<td>Can provide lost serial</td>
+</tr>
+<tr>
+<td><strong>Folder Lock (Master Key Disabled)</strong></td>
+<td>None</td>
+<td>Impossible</td>
+<td>Cannot assist</td>
+</tr>
+<tr>
+<td><strong>Word/PDF (Open Password)</strong></td>
+<td>None</td>
+<td>Requires heavy brute-force</td>
+<td>Cannot assist</td>
+</tr>
+<tr>
+<td><strong>Word/PDF (Permissions Password)</strong></td>
+<td>None</td>
+<td>Often trivial (format shift)</td>
+<td>Cannot assist</td>
+</tr>
+<tr class="verdict">
+<td><strong>Verdict</strong></td>
+<td colspan="3">Prevention is the only guaranteed solution for high-level AES encryption.</td>
+</tr>
+</tbody>
+</table><figure class="content-image"><img alt="Folder Lock 10 desktop locker screen showing protected encrypted lockers" loading="lazy" src="https://i.ibb.co/210hR8f6/folder-lock-10-desktop-locker-screen.png"/></figure>
+</div>
+</section>
+<!-- S5: PREMIUM SAAS MOMENT / WHY RECOMMEND -->
+<section class="saas-band" id="recommendation"><div aria-hidden="true" class="recommendation-circle"></div>
+<div class="container-wide" style="margin: 0 auto; padding: 0 20px;">
+<div style="max-width: 700px;">
+<span class="label">Secure Your Future Data</span>
+<h2>Why We Recommend Upgrading to Folder Lock 10</h2>
+<p>Relying on outdated, localized locking software increases the risk of catastrophic data loss if you forget a credential. The latest iteration of Folder Lock fundamentally changes how data is protected by bridging military-grade encryption with seamless, cross-platform cloud synchronization.</p>
+<div class="feature-chips">
+<span class="chip">Google Drive &amp; Dropbox Integration</span>
+<span class="chip">Mac, Windows, iOS &amp; Android Sync</span>
+<span class="chip">Secure Digital Wallets</span>
+<span class="chip">Permanent File Shredder</span>
+</div>
+<div class="saas-mockup">
+<code>
+                        [ SYSTEM STATUS: FOLDER LOCK 10 ]<br/>
+                        &gt; Architecture: AES-256 + RSA Active<br/>
+                        &gt; Cloud Lockers: Google Drive [SYNCED]<br/>
+                        &gt; Cross-Platform: macOS &amp; iOS Linked<br/>
+                        &gt; Identity: Wallet &amp; Secrets Protected<br/>
+<span style="color: #4CAF50;">Status: End-to-End Encryption Verified.</span>
+</code>
+</div><figure class="recommendation-media"><img alt="Folder Lock 10 product boxshot for secure file encryption and cloud lockers" loading="lazy" src="https://i.ibb.co/xSFPPmSR/folder-lock-10-boxshot-new-4.png"/></figure>
+<div class="saas-actions">
+<a class="btn btn-white" href="https://www.newsoftwares.net/download/folderlock10-en/folder-lock-en.exe" rel="noopener noreferrer" target="_blank">Download Free Version →</a>
+<a class="btn btn-outline" href="https://www.newsoftwares.net/folderlock/buy/" rel="noopener noreferrer" style="border-color: rgba(255,255,255,0.5); color: #fff;" target="_blank">View Full Pricing →</a>
+</div>
+</div>
+</div>
+<svg aria-hidden="true" class="hanko-seal" viewbox="0 0 132 132">
+<defs>
+<path d="M66,66 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0" id="hanko-circle-path"></path>
+</defs>
+<circle cx="66" cy="66" fill="rgba(192,57,43,.12)" r="58" stroke="#C0392B" stroke-width="4"></circle>
+<circle cx="66" cy="66" fill="none" opacity=".75" r="39" stroke="#C0392B" stroke-width="1.5"></circle>
+<text fill="#C0392B" font-size="10" font-weight="700" letter-spacing="2">
+<textpath href="#hanko-circle-path" startoffset="8%">RECOMMENDED • RECOMMENDED •</textpath>
+</text>
+<path d="M45 69 L59 83 L88 49" fill="none" stroke="#C0392B" stroke-linecap="square" stroke-linejoin="miter" stroke-width="7"></path>
+</svg></section>
+<!-- S12: FREE VS FULL (SIGNATURE DETAIL TOGGLE) -->
+<section class="section">
+<div class="container">
+<span class="label">Compare</span>
+<h2>Folder Lock: Free vs Pro Capabilities</h2>
+<p>Understand the depth of protection available based on the version you deploy.</p>
+<div class="toggle-container">
+<div class="toggle-switch">
+<button class="toggle-btn active" onclick="switchToggle('free-view')">Free Version</button>
+<button class="toggle-btn" onclick="switchToggle('paid-view')">Pro Version</button>
+</div>
+<div class="plan-view active" id="free-view">
+<ul>
+<li>Basic on-the-fly file encryption</li>
+<li>Strict 1 GB limitation for Desktop and Cloud Lockers</li>
+<li>Sync restricted to a maximum of 2 devices</li>
+<li>Standard access to iOS and Android companion apps</li>
+<li><strong>Limitation:</strong> Lacks advanced identity protection and unlimited storage capabilities.</li>
+</ul>
+</div>
+<div class="plan-view" id="paid-view">
+<ul>
+<li><strong>Unlimited Storage:</strong> Infinite capacity for Desktop, Dropbox, OneDrive, and Google Drive Lockers.</li>
+<li><strong>Cross-Platform Mastery:</strong> Synchronize encrypted data across up to 5 devices (Windows, Mac, Mobile).</li>
+<li><strong>Secure Secrets:</strong> Dedicated encrypted vaults for digital wallets, passwords, and private notes.</li>
+<li><strong>Portable Lockers:</strong> Create standalone, password-protected USB or CD containers.</li>
+<li><strong>Advanced Privacy:</strong> Department of Defense standard file shredding and automated history cleaning.</li>
+</ul>
+</div>
+</div><figure class="content-image"><img alt="Folder Lock 10 secrets password vault screen for storing private credentials" loading="lazy" src="https://i.ibb.co/p6wLgTjp/folder-lock-10-screenshot-secrets-passwords.png"/></figure>
+</div>
+</section>
+<!-- S13: PRICING (V3 Radial Adaptation) -->
+<section class="section section-alt">
+<div class="container">
+<span class="label">Decision Guide</span>
+<h2>Choose Your Protection Level</h2>
+<div class="radial-pricing">
+<div class="radial-nav">
+<button class="radial-tab active" onclick="switchRadial('pricing-1')">Basic Protection</button>
+<button class="radial-tab" onclick="switchRadial('pricing-2')">Full Security &amp; Recovery</button>
+<button class="radial-tab" onclick="switchRadial('pricing-3')">Business / Multi-User</button>
+</div>
+<div class="radial-content-area">
+<div class="radial-content active" id="pricing-1">
+<h3>Free Trial</h3>
+<div class="price-tag">$0</div>
+<p>Best for testing the interface. Limited uses, basic locking.</p>
+<a class="btn btn-outline" href="https://www.newsoftwares.net/download/folderlock7-en/" rel="noopener noreferrer" target="_blank">Download Free →</a>
+</div>
+<div class="radial-content" id="pricing-2">
+<h3>Folder Lock Pro</h3>
+<div class="price-tag">Full Version</div>
+<p>Complete AES-256 encryption, Master Key recovery, Cloud Sync, and Stealth Mode.</p>
+<a class="btn btn-primary" href="https://www.newsoftwares.net/folderlock/buy/" rel="noopener noreferrer" target="_blank">Get the Full Version →</a>
+</div>
+<div class="radial-content" id="pricing-3">
+<h3>Enterprise</h3>
+<p>Contact NewSoftwares.net for volume licensing and endpoint protection (USB Block).</p>
+</div>
+</div>
+</div><figure class="content-image"><img alt="Folder Lock 10 Pro product boxshot for full file security protection" loading="lazy" src="https://i.ibb.co/ksHyHDQV/folder-lock-10-pro-boxshot.png"/></figure>
+</div>
+</section>
+<!-- S21: RELATED GUIDES (GSC Queries) -->
+<section class="section">
+<div class="container">
+<span class="label">More on This Topic</span>
+<h2>Troubleshooting Other Password Locks</h2>
+<p>Our readers frequently ask about other password recovery scenarios. Here are brief guides to related issues:</p>
+<div class="accordion-item">
+<button class="accordion-btn" onclick="toggleAccordion(this)">Recover forgotten lock screen password (Android/Samsung)</button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+                        If you forgot a lock screen password or need to recover Samsung secure folder password, you must use Samsung's "SmartThings Find" (formerly Find My Mobile) website. If Remote Unlock is enabled on your device, you can log in with your Samsung account and reset the lock screen or secure folder PIN.
+                    </div>
+</div>
+</div><figure class="content-image"><img alt="Android pattern and PIN recovery illustration for lock screen password troubleshooting" loading="lazy" src="https://i.ibb.co/7tBk10rd/android-pattern-pin-recovery.jpg"/></figure>
+<div class="accordion-item">
+<button class="accordion-btn" onclick="toggleAccordion(this)">Recover forgotten ZIP or WinRAR password</button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+                        For 7-Zip (AES-256) or WinRAR archives, there is no master key. You must use brute-force recovery methods (like Hashcat or dedicated archive password crackers) which systematically guess passwords. This is only viable if the password is relatively short.
+                    </div>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-btn" onclick="toggleAccordion(this)">Chrome browser profile passwords</button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+                        The Chrome browser natively doesn't have any feature to password protect profiles locally against other Windows users. To restrict document access or browsing locally, you must use Windows user accounts or <a href="https://www.guru99.com/file-folder-locker-windows.html" rel="noopener noreferrer" target="_blank">third-party app lock software</a>.
+                    </div>
+</div>
+</div>
+</div>
+</section>
+<!-- S20: FAQ (V1) -->
+<section class="section section-alt" id="faq">
+<div class="container">
+<span class="label">FAQ</span>
+<h2>Frequently Asked Questions</h2><figure class="content-image"><img alt="Data protection vault illustration for Folder Lock password recovery facts" loading="lazy" src="https://i.ibb.co/bMzYGK6K/Data-Protection-Vault.jpg"/></figure>
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 2rem;">
+<div>
+<h3 style="margin-top:0;">Recovery Facts</h3>
+<p style="font-size:0.85rem; color: var(--color-meta-text);">A quick reference to common myths about Folder Lock password recovery.</p>
+</div>
+<div>
+<h4 style="margin-bottom: 0.5rem;">Is there a Folder Lock master password?</h4>
+<p style="margin-bottom: 1.5rem;">Yes. Depending on your version, this credential grants access to the main application interface. While modern versions allow account recovery via email verification codes, the encryption keys protecting localized vaults remain heavily dependent on your original password.</p>
+<h4 style="margin-bottom: 0.5rem;">How to bypass Folder Lock without the password?</h4>
+<p style="margin-bottom: 1.5rem;">You cannot organically bypass AES-256 encrypted lockers. The software utilizes kernel-level filtering, meaning the protection persists even if you boot your machine in Safe Mode. Avoid third-party "cracking" scripts, as they are universally malicious.</p>
+<h4 style="margin-bottom: 0.5rem;">Can I <a href="https://www.easeus.com/file-recovery/recover-files-from-folder-lock-without-password.html" rel="noopener noreferrer" target="_blank">recover files from Folder Lock</a> if I forgot the password?</h4>
+<p style="margin-bottom: 1.5rem;">For legacy desktop vaults, data recovery is typically impossible without the correct key or a registered serial number bypass. To mitigate this risk in the future, it is highly recommended to utilize the synchronized Cloud Lockers available in the newest software releases.</p>
+<h4 style="margin-bottom: 0.5rem;">How to contact Folder Lock support for password recovery?</h4>
+<p>You can reach NewSoftwares.net via their official support channels. Provide your purchase details or registered email. While they can assist with account access issues or missing serial keys, they cannot magically decrypt a locked vault on your local hard drive.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- S22: FINAL VERDICT / CTA -->
+<section class="section">
+<div class="container text-center">
+<span class="label">The Bottom Line</span>
+<h2>Our Final Verdict</h2>
+<p style="max-width: 600px; margin: 0 auto 2rem;">
+                True security means there are no easy backdoors. The best way to "recover" a Folder Lock password is to ensure you have the Master Key option enabled with your valid serial number, and to keep <a href="https://www.windowscentral.com/how-encrypt-data-storing-it-cloud-and-why-you-should" rel="noopener noreferrer" target="_blank">encrypted backups</a>. If you are ready to secure your files properly, use the latest version.
+            </p>
+<div class="saas-actions" style="justify-content: center;">
+<a class="btn btn-outline" href="https://www.newsoftwares.net/download/folderlock7-en/" rel="noopener noreferrer" target="_blank">Try Folder Lock Free →</a>
+<a class="btn btn-primary" href="https://www.newsoftwares.net/folderlock/buy/" rel="noopener noreferrer" target="_blank">Get the Full Version →</a>
+</div>
+<p style="margin-top: 2rem; font-size: 0.8rem; color: var(--color-meta-text);">Folder Lock is developed by <a href="https://www.newsoftwares.net" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a>.</p>
+</div>
+</section>
+</main>
+<footer>
+<div class="container">
+<div class="site-mark"><span aria-hidden="true" class="brand-graphic"></span><span class="brand-text">Folder Lock Recovery</span></div>
+<div class="footer-links">
+<a href="#methods">Recovery Methods</a>
+<a href="#troubleshooting">Troubleshooting</a>
+<a href="#architecture">Architecture</a>
+<a href="https://www.newsoftwares.net/privacy-policy/" rel="noopener noreferrer" target="_blank">Privacy Policy</a>
+</div>
+<p>This site operates as an independent editorial resource. Some links may earn a referral commission at no cost to you. Product recommendations reflect editorial judgment and independent assessment.</p>
+<p style="margin-top: 10px;">Folder Lock is a registered trademark of NewSoftwares.net.</p>
+<p style="margin-top: 20px; opacity: 0.5;">© 2026 FolderLockRecovery</p>
+</div>
+</footer>
+<!-- Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "FolderLockRecovery",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "/?s={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "How to Recover a Forgotten Folder Lock Password",
+  "description": "A complete technical guide on how to recover a forgotten Folder Lock master password, understand AES-256 encryption limits, and safeguard your documents."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is there a Folder Lock master password?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When you install the software, you create one Master Password that rules all lockers. If you enabled the 'Master Key' feature during setup, this password is tied to your serial number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How to bypass Folder Lock without the password?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is not possible to bypass AES-256 encrypted lockers without the password or the registered serial number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I recover files from Folder Lock if I forgot the password?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only if you have your serial number and enabled Master Key recovery. Otherwise, the files remain mathematically scrambled."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Recover Folder Lock Password using Serial Number",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Open Folder Lock",
+      "text": "Launch the Folder Lock application on your computer."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Click Master Key",
+      "text": "At the password prompt, click the 'Forgot Password?' or 'Master Key' link."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Enter Serial Number",
+      "text": "Enter your original purchase Serial Number exactly as it appears in your receipt email."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Reset Password",
+      "text": "If successful, the software will allow you to create a new Master Password."
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Security Guides"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "How to Recover a Forgotten Folder Lock Password"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "NewSoftwares.net",
+  "url": "https://www.newsoftwares.net"
+}
+</script>
+<!-- Interactive Scripts -->
+<script defer="">
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Smooth Scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if(target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+                if(window.innerWidth <= 768) {
+                    const nav = document.querySelector('.nav-links');
+                    if (nav) nav.classList.remove('active');
+                }
+            }
+        });
+    });
+
+    // Mobile Menu Toggle
+    const menuBtn = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if(menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // Header sticky shadow logic
+    const header = document.querySelector('header');
+    const heroCircle = document.querySelector('.hero-circle');
+    function onScrollVisuals() {
+        if (header) {
+            header.style.boxShadow = window.scrollY > 10 ? '0 2px 18px rgba(26,26,26,.06)' : 'none';
+        }
+        if (heroCircle) {
+            const offset = window.scrollY * 0.3;
+            if (window.innerWidth <= 768) {
+                heroCircle.style.transform = `translateX(-50%) translateY(${offset}px)`;
+            } else {
+                heroCircle.style.transform = `translateY(${offset}px)`;
+            }
+        }
+    }
+    window.addEventListener('scroll', onScrollVisuals, { passive: true });
+    onScrollVisuals();
+
+    // Brushstroke reveal, haiku-style benefit lines, hanko seal
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('h2').forEach(h => revealObserver.observe(h));
+
+    const chipObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                const delay = window.innerWidth <= 768 ? 400 : 600;
+                entry.target.querySelectorAll('.chip').forEach((chip, i) => {
+                    setTimeout(() => chip.classList.add('visible'), i * delay);
+                });
+                chipObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.feature-chips').forEach(group => chipObserver.observe(group));
+
+    const seal = document.querySelector('.hanko-seal');
+    if(seal) {
+        const sealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    seal.classList.add('visible');
+                    sealObserver.unobserve(seal);
+                }
+            });
+        }, { threshold: 0.35 });
+        sealObserver.observe(seal);
+    }
+});
+
+// Accordion Toggle
+function toggleAccordion(btn) {
+    const content = btn.nextElementSibling;
+    btn.classList.toggle('active');
+    if (btn.classList.contains('active')) {
+        content.style.maxHeight = content.scrollHeight + "px";
+    } else {
+        content.style.maxHeight = "0";
+    }
+}
+
+// Signature Detail: Inline Comparison Toggle
+function switchToggle(viewId) {
+    document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = Array.from(document.querySelectorAll('.toggle-btn')).find(btn => btn.getAttribute('onclick') === `switchToggle('${viewId}')`);
+    if (activeBtn) activeBtn.classList.add('active');
+    document.querySelectorAll('.plan-view').forEach(view => view.classList.remove('active'));
+    const view = document.getElementById(viewId);
+    if (view) view.classList.add('active');
+}
+
+// Flowchart Logic
+function flowNext(nextStepId) {
+    document.querySelectorAll('.flow-step').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.flow-result').forEach(el => { el.style.display = 'none'; });
+    const next = document.getElementById(nextStepId);
+    if (next) next.classList.add('active');
+}
+
+function flowShowResult(resultId) {
+    document.querySelectorAll('.flow-step').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.flow-result').forEach(el => { el.style.display = 'none'; });
+    const result = document.getElementById(resultId);
+    if(result) {
+        result.style.display = 'block';
+        result.style.animation = 'fadeIn 0.3s ease';
+    }
+}
+
+function flowReset() {
+    document.querySelectorAll('.flow-step').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.flow-result').forEach(el => { el.style.display = 'none'; });
+    const first = document.getElementById('step-1');
+    if(first) first.classList.add('active');
+}
+
+// Radial Pricing Logic
+function switchRadial(targetId) {
+    document.querySelectorAll('.radial-tab').forEach(tab => tab.classList.remove('active'));
+    const activeTab = Array.from(document.querySelectorAll('.radial-tab')).find(tab => tab.getAttribute('onclick') === `switchRadial('${targetId}')`);
+    if (activeTab) activeTab.classList.add('active');
+    document.querySelectorAll('.radial-content').forEach(content => content.classList.remove('active'));
+    const target = document.getElementById(targetId);
+    if(target) target.classList.add('active');
+}
+
+</script>
+</body>
+</html>
